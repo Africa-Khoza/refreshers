@@ -110,6 +110,7 @@ ENV/
 env.bak/
 venv.bak/
 .restapi
+.django_rest
 
 # Spyder project settings
 .spyderproject

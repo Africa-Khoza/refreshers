@@ -11,7 +11,7 @@ Setting up and building a rest api. Followed the tutorial on the official django
 3. Create models
 4. Create ModelSerializer class (add serializers.py in the app folder) and use:
 
-    ```
+    ```python
     class <Model>Serializer(serializers.ModelSerializer):
         class Meta:
             model = <Model>
@@ -20,18 +20,19 @@ Setting up and building a rest api. Followed the tutorial on the official django
 
 5. Serialize (Model to Json):
 
-    ```
+    ```python
     serializer = <Model>Serializer(snippet) 
     serializer.data
     ```
 
 6. Deserialize (Json to model):
 
-    ```
+    ```python
+    data = JSONParser().parse(request)
     serializer = <Model>Serializer(data=data)
     serializer.is_valid()
     serializer.validated_data
     serializer.save()
     ```
 
-7. 
+Last point: start with part 2 of tutorial.
