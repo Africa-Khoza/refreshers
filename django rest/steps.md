@@ -35,4 +35,25 @@ Setting up and building a rest api. Followed the tutorial on the official django
     serializer.save()
     ```
 
+7. Wrapping API views
+    - The `@api_view` decorator for working with function based views.
+    - The `APIView` class for working with class-based views.
+
+8. Adding optional format suffixes to our URLs
+To take advantage of the fact that our responses are no longer hardwired to a single content type let's add support for format suffixes to our API endpoints. Using format suffixes gives us URLs that explicitly refer to a given format, and means our API will be able to handle URLs such as http://example.com/api/items/4.json.
+
+    - Start by adding a format keyword argument to both of the views, like so. 
+
+        ```python
+        def snippet_list(request, format=None):
+        ```
+
+    - Then update the snippets/urls.py file slightly, to append a set of format_suffix_patterns in addition to the existing URLs.
+
+        ```python
+        from rest_framework.urlpatterns import format_suffix_patterns
+        ...
+        urlpatterns = format_suffix_patterns(urlpatterns)
+        ```
+
 Last point: start with part 2 of tutorial.
