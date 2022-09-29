@@ -40,9 +40,9 @@ Setting up and building a rest api. Followed the tutorial on the official django
     - The `APIView` class for working with class-based views.
 
 8. Adding optional format suffixes to our URLs
-To take advantage of the fact that our responses are no longer hardwired to a single content type let's add support for format suffixes to our API endpoints. Using format suffixes gives us URLs that explicitly refer to a given format, and means our API will be able to handle URLs such as http://example.com/api/items/4.json.
+To take advantage of the fact that our responses are no longer hardwired to a single content type let's add support for format suffixes to our API endpoints. Using format suffixes gives us URLs that explicitly refer to a given format, and means our API will be able to handle URLs such as <http://example.com/api/items/4.json>.
 
-    - Start by adding a format keyword argument to both of the views, like so. 
+    - Start by adding a format keyword argument to both of the views, like so.
 
         ```python
         def snippet_list(request, format=None):
@@ -56,4 +56,30 @@ To take advantage of the fact that our responses are no longer hardwired to a si
         urlpatterns = format_suffix_patterns(urlpatterns)
         ```
 
-Last point: start with part 2 of tutorial.
+9. Changing to class views
+    - Specify api view as parameter, eg. 'class SnippetDetail(APIView):'
+    - Handle request methods using functions instead.
+
+10. Mixins: access api functions
+    - first, add `generics.GenericAPIView)` as a parameter to the class
+
+    ```python
+    mixins.ListModelMixin - .list()
+    mixins.CreateModelMixin - .create()
+    mixins.UpdateModelMixin - .put()
+    ```
+
+11. Even better mixins!
+
+    ```python
+    (mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    generics.GenericAPIView) -> (generics.ListCreateAPIView)
+
+    (mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    generics.GenericAPIView) -> (generics.RetrieveUpdateDestroyAPIView)
+    ```
+
+Last point: start with part 4 of tutorial.
