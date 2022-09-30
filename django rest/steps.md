@@ -82,4 +82,55 @@ To take advantage of the fact that our responses are no longer hardwired to a si
     generics.GenericAPIView) -> (generics.RetrieveUpdateDestroyAPIView)
     ```
 
-Last point: start with part 4 of tutorial.
+12. Adding endpoints for our User models
+    - Create users and add user as foreign key `owner = models.ForeignKey('auth.User', related_name='snippets', on_delete=models.CASCADE)`
+    - Create user serializers and link to model `snippets = serializers.PrimaryKeyRelatedField(many=True, queryset=Snippet.objects.all())`
+    - Associate Users to snippet,implicitly add a new user parameter to the create method:
+
+        ```python
+        def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+        ```
+
+    - And update your `<Model>Serializer` accordingly: `owner = serializers.ReadOnlyField(source='owner.username')`
+
+13. Adding required permissions to views
+    REST framework includes a number of permission classes that we can use to restrict who can access a given view. In this case the one we're looking for is IsAuthenticatedOrReadOnly, which will ensure that authenticated requests get read-write access, and unauthenticated requests get read-only access.
+
+    - First add the following import in the views module `from rest_framework import permissions`
+    - Then, add the following property to views requiring authentication. `permission_classes = [permissions.IsAuthenticatedOrReadOnly]`
+
+14. Adding login to the Browsable API
+    - Add `from django.urls import path, include` to the top of the `urls.py` file and add
+
+        ```python
+        urlpatterns += [
+            path('api-auth/', include('rest_framework.urls')),
+        ]
+        ```
+
+15. Enable instance owner to edit and delete instance while others can only view.
+    - Create new `permissions`.py file and add
+
+        ```python
+        from rest_framework import permissions
+
+
+        class IsOwnerOrReadOnly(permissions.BasePermission):
+            """
+            Custom permission to only allow owners of an object to edit it.
+            """
+
+            def has_object_permission(self, request, view, obj):
+                # Read permissions are allowed to any request,
+                # so we'll always allow GET, HEAD or OPTIONS requests.
+                if request.method in permissions.SAFE_METHODS:
+                    return True
+
+                # Write permissions are only allowed to the owner of the snippet.
+                return obj.owner == request.user
+        ```
+
+    - Add the new custom permission to the appropriate views.
+
+Last point: continue with part 4 of tutorial.
