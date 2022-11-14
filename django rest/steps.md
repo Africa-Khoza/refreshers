@@ -133,4 +133,73 @@ To take advantage of the fact that our responses are no longer hardwired to a si
 
     - Add the new custom permission to the appropriate views.
 
-Last point: continue with part 4 of tutorial.
+16. Creating an endpoint for the root of our API instead of only having endpoints to objects.
+
+    - Add the following to `views.py`:
+
+        ```python
+        from rest_framework.decorators import api_view
+        from rest_framework.response import Response
+        from rest_framework.reverse import reverse
+
+
+        @api_view(['GET'])
+        def api_root(request, format=None):
+            return Response({
+                'users': reverse('user-list', request=request, format=format),
+                'snippets': reverse('snippet-list', request=request, format=format)
+            })
+        ```
+
+    - Add line `path('', views.api_root),` to `urls.py`.
+
+17. Creating an endpoint for the highlighted snippets - not sure what this means, ie. how it changes the functionality of the code.
+    - Add to `views.py`:
+
+        ```python
+        from rest_framework import renderers
+
+        class SnippetHighlight(generics.GenericAPIView):
+            queryset = Snippet.objects.all()
+            renderer_classes = [renderers.StaticHTMLRenderer]
+
+            def get(self, request, *args, **kwargs):
+                snippet = self.get_object()
+                return Response(snippet.highlighted)
+        ```
+
+    - Add `path('snippets/<int:pk>/highlight/', views.SnippetHighlight.as_view()),` to `urls.py`
+
+18. Hyperlinking our API - this is one of the many ways to create a relationship between to entities in our project, read more [here](https://www.django-rest-framework.org/tutorial/5-relationships-and-hyperlinked-apis/#hyperlinking-our-api)
+    - Update your `serializers.py` with the following code
+
+    ```python
+    class SnippetSerializer(serializers.HyperlinkedModelSerializer):
+    owner = serializers.ReadOnlyField(source='owner.username')
+    highlight = serializers.HyperlinkedIdentityField(view_name='snippet-highlight', format='html')
+
+    class Meta:
+        model = Snippet
+        fields = ['url', 'id', 'highlight', 'owner',
+                  'title', 'code', 'linenos', 'language', 'style']
+
+
+    class UserSerializer(serializers.HyperlinkedModelSerializer):
+        snippets = serializers.HyperlinkedRelatedField(many=True, view_name='snippet-detail', read_only=True)
+
+        class Meta:
+            model = User
+            fields = ['url', 'id', 'username', 'snippets']
+    ```
+
+19. Adding pagination
+    - Add the following code to `settings.py`
+
+    ```python
+    REST_FRAMEWORK = {
+        'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+        'PAGE_SIZE': 10
+    }
+    ```
+
+Last point: continue to part 6 of tutorial.
