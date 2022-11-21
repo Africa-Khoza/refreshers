@@ -111,6 +111,7 @@ env.bak/
 venv.bak/
 .restapi
 .django_rest
+.load_shedding
 
 # Spyder project settings
 .spyderproject
