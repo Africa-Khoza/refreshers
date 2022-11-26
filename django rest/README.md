@@ -19,6 +19,7 @@ Setting up and building a rest api. Followed the tutorial on the official django
     ```
 
 5. Serialize (Model to Json):
+    `snippet` is an instance of the model Snippets
 
     ```python
     serializer = <Model>Serializer(snippet) 
@@ -57,8 +58,8 @@ To take advantage of the fact that our responses are no longer hardwired to a si
         ```
 
 9. Changing to class views
-    - Specify api view as parameter, eg. 'class SnippetDetail(APIView):'
-    - Handle request methods using functions instead.
+    - Specify api view as parameter, eg. `class SnippetDetail(APIView):`
+    - Handle request methods using functions instead. eg. `def get(self, request, format=None):` or `def post(self, request, format=None):`
 
 10. Mixins: access api functions
     - first, add `generics.GenericAPIView)` as a parameter to the class
